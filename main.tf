@@ -48,9 +48,8 @@ resource "aws_route_table" "dmz" {
     gateway_id = aws_internet_gateway.main.id
   }
 
-
   tags = {
-    Name = "dmz"
+    Name = "dmz-euw1"
   }
 }
 
