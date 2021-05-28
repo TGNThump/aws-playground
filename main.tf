@@ -60,7 +60,6 @@ resource "aws_route_table" "dmz" {
 }
 
 resource "aws_route_table_association" "dmz-eu-west-1a" {
-  vpc_id = aws_vpc.main.id
   route_table_id = aws_route_table.dmz.id
   subnet_id = aws_subnet.dmz-eu-west-1a.id
 }
