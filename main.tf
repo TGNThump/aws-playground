@@ -54,7 +54,7 @@ resource "aws_route_table" "dmz" {
   vpc_id = aws_vpc.main.id
 
   route {
-    destination_cidr_block = "0.0.0.0/0"
+    cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id
   }
 }
@@ -96,7 +96,6 @@ resource "aws_route_table" "app" {
 }
 
 resource "aws_route_table_association" "app-eu-west-1a" {
-  vpc_id = aws_vpc.main.id
   route_table_id = aws_route_table.app.id
   subnet_id = aws_subnet.app-eu-west-1a.id
 }
