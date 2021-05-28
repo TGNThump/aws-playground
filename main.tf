@@ -140,3 +140,21 @@ resource "aws_route_table_association" "app-route-table-associations" {
   route_table_id = aws_route_table.app-route-tables[count.index].id
   subnet_id = aws_subnet.app-subnets[count.index].id
 }
+
+resource "aws_security_group" "dmz" {
+  name = "DMZ"
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "DMZ"
+  }
+}
+
+resource "aws_security_group" "app" {
+  name = "APP"
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "APP"
+  }
+}
