@@ -1,5 +1,8 @@
  resource "aws_vpc" "main" {
-  cidr_block = var.cidr
+   cidr_block = var.cidr
+   tags = {
+     Name = var.region
+   }
 }
 
 resource "aws_internet_gateway" "main" {

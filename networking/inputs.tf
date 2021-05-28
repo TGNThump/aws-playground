@@ -25,6 +25,11 @@ variable "az-subnet-mapping" {
   ]
 }
 
+variable "region" {
+  description = "AWS Region"
+  type = string
+}
+
 variable "cidr" {
   description = "CIDR block to assign to the VPC"
   type        = string

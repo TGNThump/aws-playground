@@ -7,14 +7,19 @@ terraform {
   }
 }
 
+locals {
+  region = "eu-west-1"
+}
+
 provider "aws" {
   profile = "default"
-  region  = "eu-west-1"
+  region  = local.region
 }
 
 module "networking" {
   source = "./networking"
   cidr = "10.0.0.0/16"
+  region = local.region
 
   az-subnet-mapping = [
     {
