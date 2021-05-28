@@ -78,11 +78,11 @@ resource "aws_subnet" "dmz-subnets" {
   }
 }
 
-resource "aws_route_table_association" "dmz-eu-west-1a" {
+resource "aws_route_table_association" "dmz-route-table-associations" {
   count = length(var.availability_zones)
 
   route_table_id = aws_route_table.dmz.id
-  subnet_id = aws_subnet.dmz-subnets[count.index].id
+  subnet_id = lookup(aws_subnet.dmz-subnets[count.index], "id")
 }
 
 // APP EUW1 AZ1
