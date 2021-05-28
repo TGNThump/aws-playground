@@ -53,7 +53,6 @@ variable "availability_zones" {
   type = list(object({
     name: string
     id: string
-    cidr: number
   }))
   default = [{
     name: "eu-west-1a"
