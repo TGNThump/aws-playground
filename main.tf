@@ -72,9 +72,9 @@ resource "aws_subnet" "dmz-subnets" {
   cidr_block              = "10.0.${count.index}.0/24"
   vpc_id                  = aws_vpc.main.id
   map_public_ip_on_launch = true
-  availability_zone       = lookup(var.availability_zones[count.index], "name")
+  availability_zone       = var.availability_zones[count.index].name
   tags = {
-    Name = "dmz-${lookup(var.availability_zones[count.index], "id")}"
+    Name = "dmz-${var.availability_zones[count.index].id}"
   }
 }
 
@@ -82,7 +82,7 @@ resource "aws_route_table_association" "dmz-route-table-associations" {
   count = length(var.availability_zones)
 
   route_table_id = aws_route_table.dmz.id
-  subnet_id = lookup(aws_subnet.dmz-subnets[count.index], "id")
+  subnet_id = aws_subnet.dmz-subnets[count.index].id
 }
 
 // APP EUW1 AZ1
