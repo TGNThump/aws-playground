@@ -1,5 +1,9 @@
 variable "az-subnet-mapping" {
-  type        = "list"
+  type = list(object({
+    name: string
+    az: string
+    cidr: string
+  }))
   description = "Lists the subnets to be created in their respective AZ."
 
   default = [
@@ -23,5 +27,5 @@ variable "az-subnet-mapping" {
 
 variable "cidr" {
   description = "CIDR block to assign to the VPC"
-  type        = "string"
+  type        = string
 }
