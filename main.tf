@@ -50,7 +50,7 @@ resource "aws_route_table" "dmz" {
 
 
   tags = {
-    Name = "dmz-route-table"
+    Name = "dmz"
   }
 }
 
@@ -117,7 +117,7 @@ resource "aws_nat_gateway" "app-nat-gateways" {
   allocation_id = aws_eip.app-nat-eips[count.index].id
   subnet_id = aws_subnet.app-subnets[count.index].id
   tags = {
-    Name = "app-${var.availability_zones[count.index].id}-nat"
+    Name = "app-${var.availability_zones[count.index].id}"
   }
 }
 
@@ -131,7 +131,7 @@ resource "aws_route_table" "app-route-tables" {
   }
 
   tags = {
-    Name = "app-${var.availability_zones[count.index].id}-route-table"
+    Name = "app-${var.availability_zones[count.index].id}"
   }
 }
 
