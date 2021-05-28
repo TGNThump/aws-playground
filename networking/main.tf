@@ -13,14 +13,14 @@ resource "aws_route" "internet_access" {
 }
 
 resource "aws_subnet" "main" {
-  count = "${length(var.az-subnet-mapping)}"
+  count = length(var.az-subnet-mapping)
 
-  cidr_block              = "${lookup(var.az-subnet-mapping[count.index], "cidr")}"
-  vpc_id                  = "${aws_vpc.main.id}"
+  cidr_block              = lookup(var.az-subnet-mapping[count.index], "cidr")
+  vpc_id                  = aws_vpc.main.id
   map_public_ip_on_launch = true
-  availability_zone       = "${lookup(var.az-subnet-mapping[count.index], "az")}"
+  availability_zone       = lookup(var.az-subnet-mapping[count.index], "az")
 
   tags = {
-    Name = "${lookup(var.az-subnet-mapping[count.index], "name")}"
+    Name = lookup(var.az-subnet-mapping[count.index], "name")
   }
 }
