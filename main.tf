@@ -65,7 +65,7 @@ resource "aws_route_table_association" "dmz-eu-west-1a" {
 }
 
 resource "aws_subnet" "app-eu-west-1a" {
-  cidr_block              = "10.0.1 .0/24"
+  cidr_block              = "10.0.1.0/24"
   vpc_id                  = aws_vpc.main.id
   availability_zone       = "eu-west-1a"
   tags = {
