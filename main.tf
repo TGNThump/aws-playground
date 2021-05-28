@@ -47,6 +47,11 @@ resource "aws_route_table" "dmz" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id
   }
+
+
+  tags = {
+    Name = "dmz-route-table"
+  }
 }
 
 variable "availability_zones" {
@@ -123,6 +128,10 @@ resource "aws_route_table" "app-route-tables" {
   route {
     cidr_block = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.app-nat-gateways[count.index].id
+  }
+
+  tags = {
+    Name = "app-${var.availability_zones[count.index].id}-route-table"
   }
 }
 
