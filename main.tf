@@ -17,7 +17,7 @@ provider "aws" {
 }
 
 resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/8 "
+  cidr_block = "10.0.0.0/8"
   tags = {
     Name = local.region
   }
