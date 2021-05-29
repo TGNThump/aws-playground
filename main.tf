@@ -245,3 +245,14 @@ resource "aws_alb" "dmz-lb" {
     Name = "DMZ-ALB"
   }
 }
+
+resource "aws_route53_record" "dmz-lb-a" {
+  name = aws_route53_zone.main.name
+  type = "A"
+  zone_id = aws_route53_zone.main.id
+  alias {
+    evaluate_target_health = false
+    name = aws_alb.dmz-lb.dns_name
+    zone_id = aws_alb.dmz-lb.zone_id
+  }
+}
