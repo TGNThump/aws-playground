@@ -346,6 +346,11 @@ resource "aws_ecs_task_definition" "test_task_definition" {
       image = "public.ecr.aws/nginx/nginx:latest"
       essential = true
       networkMode = "awsvpc"
+      portMappings = [
+        {
+          containerPort = 8080
+        }
+      ]
     }
   ])
 }
