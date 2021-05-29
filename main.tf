@@ -469,6 +469,7 @@ data "aws_cloudfront_origin_request_policy" "managedAllViewer"{
 
 resource "aws_cloudfront_distribution" "main" {
   enabled = true
+  aliases = ["aws.pilgrim.me.uk"]
   price_class = "PriceClass_100"
   default_cache_behavior {
 
@@ -488,7 +489,7 @@ resource "aws_cloudfront_distribution" "main" {
       http_port = 80
       https_port = 443
       origin_protocol_policy = "https-only"
-      origin_ssl_protocols = ["SSLv3"]
+      origin_ssl_protocols = ["TLSv1.2"]
     }
   }
   restrictions {
