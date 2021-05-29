@@ -335,7 +335,7 @@ resource "aws_ecs_task_definition" "test_task_definition" {
   memory = 512
   container_definitions = jsonencode([
     {
-      name = "hello_word"
+      name = "hello_world"
       image = "tutum/hello-world"
       essential = true
       portMappings = [
@@ -354,7 +354,6 @@ resource "aws_ecs_service" "test_service" {
   task_definition = aws_ecs_task_definition.test_task_definition.arn
   desired_count = 2
   launch_type = "FARGATE"
-
 
   load_balancer {
     target_group_arn = aws_alb_target_group.test_service.arn
