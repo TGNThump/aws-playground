@@ -36,7 +36,7 @@ resource "cloudflare_record" "ns-records" {
   name = "aws.pilgrim.me.uk"
   value = aws_route53_zone.main.name_servers[count.index]
   type = "NS"
-  ttl = 30
+  ttl = 1
   zone_id = data.cloudflare_zones.main.zones[0].id
 }
 
