@@ -31,6 +31,7 @@ resource "aws_vpc" "main" {
 
 resource "aws_vpc_dhcp_options" "main" {
   domain_name = "aws.pilgrim.me.uk"
+  domain_name_servers = ["AmazonProvidedDNS"]
 
   tags = {
     Name = "DHCP Option Set"
