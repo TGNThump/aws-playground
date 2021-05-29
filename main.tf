@@ -314,9 +314,9 @@ resource "aws_alb_listener" "https" {
 
 resource "aws_ecs_cluster" "main" {
   name = "app"
-  capacity_providers = ["FARGATE_SPOT"]
+  capacity_providers = ["FARGATE"]
   default_capacity_provider_strategy {
-    capacity_provider = "FARGATE_SPOT"
+    capacity_provider = "FARGATE"
   }
 }
 
