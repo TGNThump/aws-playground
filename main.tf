@@ -208,6 +208,10 @@ resource "aws_acm_certificate" "cert" {
   lifecycle {
     create_before_destroy = true
   }
+
+  tags = {
+    Name = "aws.pilgrim.me.uk"
+  }
 }
 
 resource "aws_route53_record" "domain-validation-records" {
@@ -230,4 +234,14 @@ resource "aws_route53_record" "domain-validation-records" {
 resource "aws_acm_certificate_validation" "validation" {
   certificate_arn = aws_acm_certificate.cert.arn
   validation_record_fqdns = [for record in aws_route53_record.domain-validation-records : record.fqdn]
+}
+
+resource "aws_alb" "dmz-lb" {
+  name = "DMZ-ALB"
+  security_groups = [aws_security_group.dmz.id]
+  subnets = aws_subnet.dmz-subnets.*.id
+
+  tags = {
+    Name = "DMZ-ALB"
+  }
 }
