@@ -331,12 +331,12 @@ resource "aws_ecs_task_definition" "test_task_definition" {
   family = "test_task_definition"
   network_mode = "awsvpc"
   requires_compatibilities = ["FARGATE"]
+  cpu = 2
+  memory = 512
   container_definitions = jsonencode([
     {
       name = "hello_word"
       image = "tutum/hello-world"
-      cpu = 2
-      memory = 512
       essential = true
       portMappings = [
         {
