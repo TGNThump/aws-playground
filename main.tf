@@ -256,3 +256,19 @@ resource "aws_route53_record" "dmz-lb-a" {
     zone_id = aws_alb.dmz-lb.zone_id
   }
 }
+
+resource "aws_alb_listener" "main" {
+  load_balancer_arn = aws_alb.dmz-lb.arn
+  port = 443
+  protocol = "HTTPS"
+  certificate_arn = aws_acm_certificate.cert.arn
+  default_action {
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "Yay!"
+      status_code = "200"
+    }
+  }
+}
