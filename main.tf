@@ -421,15 +421,27 @@ resource "aws_ecs_service" "test_service" {
   }
 }
 
+data "aws_cloudfront_cache_policy" "managedCachingOptimized"{
+  name = "Managed-CachingOptimized"
+}
+
+data "aws_cloudfront_origin_request_policy" "managedAllViewer"{
+  name = "Managed-AllViewer"
+}
+
 resource "aws_cloudfront_distribution" "main" {
   enabled = true
   price_class = "PriceClass_100"
   default_cache_behavior {
+
     allowed_methods = ["GET","HEAD"]
     cached_methods = ["GET","HEAD"]
-    compress = true
+    cache_policy_id = data.aws_cloudfront_cache_policy.managedCachingOptimized.id
+    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.managedAllViewer.id
+
     target_origin_id = aws_alb.dmz-lb.name
     viewer_protocol_policy = "redirect-to-https"
+
     forwarded_values {
       query_string = false
       cookies {
@@ -440,6 +452,7 @@ resource "aws_cloudfront_distribution" "main" {
   origin {
     domain_name = aws_alb.dmz-lb.dns_name
     origin_id = aws_alb.dmz-lb.name
+
     custom_origin_config {
       http_port = 80
       https_port = 443
