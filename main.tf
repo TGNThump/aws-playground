@@ -410,7 +410,7 @@ resource "aws_ecs_task_definition" "test_task_definition" {
         options: {
           awslogs-group: aws_cloudwatch_log_group.test_log_group.name,
           awslogs-region: "eu-west-1",
-          awslogs-stream-prefix: "hello-world"
+          awslogs-stream-prefix: aws_cloudwatch_log_group.test_log_group.name
         }
       },
     }
