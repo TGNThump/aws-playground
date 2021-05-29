@@ -257,7 +257,21 @@ resource "aws_route53_record" "dmz-lb-a" {
   }
 }
 
-resource "aws_alb_listener" "main" {
+resource "aws_alb_listener" "http" {
+  load_balancer_arn = aws_alb.dmz-lb.arn
+  port = 80
+  protocol = "HTTP"
+  default_action {
+    type = "redirect"
+
+    redirect {
+      status_code = "301"
+      port = "443"
+    }
+  }
+}
+
+resource "aws_alb_listener" "https" {
   load_balancer_arn = aws_alb.dmz-lb.arn
   port = 443
   protocol = "HTTPS"
