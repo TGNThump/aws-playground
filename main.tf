@@ -17,6 +17,12 @@ locals {
 
 provider "aws" {
   profile = "default"
+  alias = "us-east-1"
+  region  = "us-east-1"
+}
+
+provider "aws" {
+  profile = "default"
   region  = local.region
 }
 
@@ -243,6 +249,7 @@ resource "aws_route53_zone" "main" {
 }
 
 resource "aws_acm_certificate" "cert" {
+  provider = aws.us-east-1
   domain_name = "aws.pilgrim.me.uk"
   validation_method = "DNS"
 
