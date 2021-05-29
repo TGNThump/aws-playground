@@ -471,6 +471,7 @@ resource "aws_cloudfront_distribution" "main" {
   enabled = true
   aliases = ["aws.pilgrim.me.uk"]
   price_class = "PriceClass_100"
+  //noinspection MissingProperty
   default_cache_behavior {
 
     allowed_methods = ["GET","HEAD"]
