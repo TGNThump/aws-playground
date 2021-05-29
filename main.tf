@@ -161,6 +161,13 @@ resource "aws_security_group" "dmz" {
     to_port = 443
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  ingress {
+    from_port = 80
+    protocol = "TCP"
+    to_port = 80
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_security_group" "app" {
