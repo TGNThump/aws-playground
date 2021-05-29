@@ -330,6 +330,7 @@ resource "aws_alb_target_group" "test_service" {
 resource "aws_ecs_task_definition" "test_task_definition" {
   family = "test_task_definition"
   network_mode = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
   container_definitions = jsonencode([
     {
       name = "hello_word"
