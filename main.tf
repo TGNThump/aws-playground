@@ -329,17 +329,23 @@ resource "aws_alb_target_group" "test_service" {
   vpc_id = aws_vpc.main.id
 }
 
+data "aws_iam_role" "ecs_task_execution_role" {
+  name = "ecsTaskExecutionRole"
+}
+
 resource "aws_ecs_task_definition" "test_task_definition" {
   family = "test_task_definition"
   network_mode = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu = 256
   memory = 512
+  execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
   container_definitions = jsonencode([
     {
       name = "hello_world"
       image = "tutum/hello-world"
       essential = true
+      networkMode = "awsvpc"
       portMappings = [
         {
           containerPort: 80
