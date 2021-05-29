@@ -362,6 +362,10 @@ resource "aws_alb_target_group" "test_service" {
   port = 80
   target_type = "ip"
   vpc_id = aws_vpc.main.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 data "aws_iam_role" "ecs_task_execution_role" {
