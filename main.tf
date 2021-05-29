@@ -368,6 +368,10 @@ data "aws_iam_role" "ecs_task_execution_role" {
   name = "ecsTaskExecutionRole"
 }
 
+resource "aws_cloudwatch_log_group" "nginx_log_group" {
+  name = "awslogs-nginx"
+}
+
 resource "aws_ecs_task_definition" "test_task_definition" {
   family = "test_task_definition"
   network_mode = "awsvpc"
@@ -389,7 +393,7 @@ resource "aws_ecs_task_definition" "test_task_definition" {
       logConfiguration: {
         logDriver: "awslogs",
         options: {
-          awslogs-group: "awslogs-nginx-group",
+          awslogs-group: aws_cloudwatch_log_group.nginx_log_group.name,
           awslogs-region: "eu-west-1",
           awslogs-stream-prefix: "awslogs-nginx-prefix"
         }
