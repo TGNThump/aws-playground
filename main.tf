@@ -47,19 +47,6 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 }
 
-resource "aws_route_table" "dmz" {
-  vpc_id = aws_vpc.main.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.main.id
-  }
-
-  tags = {
-    Name = "dmz-euw1"
-  }
-}
-
 variable "availability_zones" {
   type = list(object({
     name: string
@@ -76,6 +63,19 @@ variable "availability_zones" {
 }
 
 // DMZ
+
+resource "aws_route_table" "dmz" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+
+  tags = {
+    Name = "dmz-euw1"
+  }
+}
 
 resource "aws_subnet" "dmz-subnets" {
   count = length(var.availability_zones)
@@ -96,6 +96,59 @@ resource "aws_route_table_association" "dmz-route-table-associations" {
   subnet_id = aws_subnet.dmz-subnets[count.index].id
 }
 
+// NAT
+
+//resource "aws_route_table" "nat" {
+//  vpc_id = aws_vpc.main.id
+//
+//  route {
+//    cidr_block = "0.0.0.0/0"
+//    gateway_id = aws_internet_gateway.main.id
+//  }
+//
+//  tags = {
+//    Name = "nat-euw1"
+//  }
+//}
+//
+//resource "aws_subnet" "nat-subnets" {
+//  count = length(var.availability_zones)
+//
+//  cidr_block              = "10.0.${20 + count.index}.0/24"
+//  vpc_id                  = aws_vpc.main.id
+//  map_public_ip_on_launch = true
+//  availability_zone       = var.availability_zones[count.index].name
+//  tags = {
+//    Name = "nat-${var.availability_zones[count.index].id}"
+//  }
+//}
+//
+//resource "aws_route_table_association" "dmz-route-table-associations" {
+//  count = length(var.availability_zones)
+//
+//  route_table_id = aws_route_table.dmz.id
+//  subnet_id = aws_subnet.dmz-subnets[count.index].id
+//}
+
+resource "aws_eip" "nat-eips" {
+  count = length(var.availability_zones)
+
+  tags = {
+    Name = "${var.availability_zones[count.index].id}-nat"
+  }
+}
+
+resource "aws_nat_gateway" "nat-gateways" {
+  count = length(var.availability_zones)
+
+  allocation_id = aws_eip.nat-eips[count.index].id
+//  subnet_id = aws_subnet.nat-subnets[count.index].id
+  subnet_id = aws_subnet.dmz-subnets[count.index].id
+  tags = {
+    Name = "nat-${var.availability_zones[count.index].id}"
+  }
+}
+
 // APP
 
 resource "aws_subnet" "app-subnets" {
@@ -109,31 +162,13 @@ resource "aws_subnet" "app-subnets" {
   }
 }
 
-resource "aws_eip" "app-nat-eips" {
-  count = length(var.availability_zones)
-
-  tags = {
-    Name = "app-${var.availability_zones[count.index].id}-nat"
-  }
-}
-
-resource "aws_nat_gateway" "app-nat-gateways" {
-  count = length(var.availability_zones)
-
-  allocation_id = aws_eip.app-nat-eips[count.index].id
-  subnet_id = aws_subnet.app-subnets[count.index].id
-  tags = {
-    Name = "app-${var.availability_zones[count.index].id}"
-  }
-}
-
 resource "aws_route_table" "app-route-tables" {
   count = length(var.availability_zones)
   vpc_id = aws_vpc.main.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.app-nat-gateways[count.index].id
+    nat_gateway_id = aws_nat_gateway.nat-gateways[count.index].id
   }
 
   tags = {
@@ -158,8 +193,8 @@ resource "aws_security_group" "app" {
 
   ingress {
     from_port = 80
-    protocol = "TCP"
     to_port = 80
+    protocol = "TCP"
     security_groups = [aws_security_group.albs.id]
   }
 
