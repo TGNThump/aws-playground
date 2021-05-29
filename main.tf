@@ -361,7 +361,7 @@ resource "aws_ecs_service" "test_service" {
   }
 
   network_configuration {
-    subnets = [aws_subnet.app-subnets.*.id]
+    subnets = aws_subnet.app-subnets.*.id
     security_groups = [aws_security_group.app.id]
   }
 }
