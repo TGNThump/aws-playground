@@ -255,6 +255,7 @@ resource "aws_acm_certificate" "cert" {
   }
 }
 
+//noinspection HILUnresolvedReference
 resource "aws_route53_record" "domain-validation-records" {
   for_each = {
     for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
