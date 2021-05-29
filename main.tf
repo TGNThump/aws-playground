@@ -22,28 +22,6 @@ provider "aws" {
 
 provider "cloudflare" {}
 
-data "cloudflare_zones" "main" {
-  filter {
-    name = "pilgrim.me.uk"
-    status = "active"
-    paused = false
-  }
-}
-
-resource "cloudflare_record" "ns-records" {
-  count = length(aws_route53_zone.main.name_servers)
-
-  name = "aws.pilgrim.me.uk"
-  value = aws_route53_zone.main.name_servers[count.index]
-  type = "NS"
-  ttl = 1
-  zone_id = data.cloudflare_zones.main.zones[0].id
-}
-
-resource "aws_route53_zone" "main" {
-  name = "aws.pilgrim.me.uk"
-}
-
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
   tags = {
@@ -199,4 +177,57 @@ resource "aws_security_group" "app" {
     to_port = 80
     security_groups = [aws_security_group.dmz.id]
   }
+}
+
+data "cloudflare_zones" "main" {
+  filter {
+    name = "pilgrim.me.uk"
+    status = "active"
+    paused = false
+  }
+}
+
+resource "cloudflare_record" "ns-records" {
+  count = length(aws_route53_zone.main.name_servers)
+
+  name = "aws.pilgrim.me.uk"
+  value = aws_route53_zone.main.name_servers[count.index]
+  type = "NS"
+  ttl = 1
+  zone_id = data.cloudflare_zones.main.zones[0].id
+}
+
+resource "aws_route53_zone" "main" {
+  name = "aws.pilgrim.me.uk"
+}
+
+resource "aws_acm_certificate" "cert" {
+  domain_name = "aws.pilgrim.me.uk"
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_route53_record" "domain-validation-records" {
+  for_each = {
+    for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+   }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = aws_route53_zone.main.zone_id
+}
+
+resource "aws_acm_certificate_validation" "validation" {
+  certificate_arn = aws_acm_certificate.cert.arn
+  validation_record_fqdns = [for record in aws_route53_record.domain-validation-records : record.fqdn]
 }
