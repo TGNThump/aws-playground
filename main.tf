@@ -359,7 +359,7 @@ resource "aws_ecs_cluster" "main" {
 resource "aws_alb_target_group" "test_service" {
   name = "test-service"
   protocol = "HTTP"
-  port = 8080
+  port = 80
   target_type = "ip"
   vpc_id = aws_vpc.main.id
 }
@@ -368,8 +368,8 @@ data "aws_iam_role" "ecs_task_execution_role" {
   name = "ecsTaskExecutionRole"
 }
 
-resource "aws_cloudwatch_log_group" "nginx_log_group" {
-  name = "awslogs-nginx"
+resource "aws_cloudwatch_log_group" "test_log_group" {
+  name = "awslogs-test"
 }
 
 resource "aws_ecs_task_definition" "test_task_definition" {
@@ -381,19 +381,19 @@ resource "aws_ecs_task_definition" "test_task_definition" {
   execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
   container_definitions = jsonencode([
     {
-      name = "nginx"
-      image = "public.ecr.aws/nginx/nginx:latest"
+      name = "test"
+      image = "tutum/hello-world"
       essential = true
       networkMode = "awsvpc"
       portMappings = [
         {
-          containerPort = 8080
+          containerPort = 80
         }
       ],
       logConfiguration: {
         logDriver: "awslogs",
         options: {
-          awslogs-group: aws_cloudwatch_log_group.nginx_log_group.name,
+          awslogs-group: aws_cloudwatch_log_group.test_log_group.name,
           awslogs-region: "eu-west-1",
           awslogs-stream-prefix: "awslogs-nginx-prefix"
         }
@@ -411,8 +411,8 @@ resource "aws_ecs_service" "test_service" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.test_service.arn
-    container_name = "nginx"
-    container_port = 8080
+    container_name = "test"
+    container_port = 80
   }
 
   network_configuration {
