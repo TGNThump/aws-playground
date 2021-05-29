@@ -249,6 +249,19 @@ resource "aws_route53_zone" "main" {
 }
 
 resource "aws_acm_certificate" "cert" {
+  domain_name = "aws.pilgrim.me.uk"
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = {
+    Name = "aws.pilgrim.me.uk"
+  }
+}
+
+resource "aws_acm_certificate" "cert-us-east-1" {
   provider = aws.us-east-1
   domain_name = "aws.pilgrim.me.uk"
   validation_method = "DNS"
@@ -466,7 +479,7 @@ resource "aws_cloudfront_distribution" "main" {
     }
   }
   viewer_certificate {
-    acm_certificate_arn = aws_acm_certificate.cert.arn
+    acm_certificate_arn = aws_acm_certificate.cert-us-east-1.arn
     ssl_support_method = "sni-only"
     minimum_protocol_version = "TLSv1.2_2019"
   }
