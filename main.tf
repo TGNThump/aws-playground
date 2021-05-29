@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 3.27"
     }
+    cloudflare = {
+      source = "cloudflare/cloudflare"
+      version = "~> 2.0"
+    }
   }
 }
 
@@ -16,6 +20,15 @@ provider "aws" {
   region  = local.region
 }
 
+provider "cloudflare" {}
+
+resource "cloudflare_record" "ns-record" {
+  name = "aws.pilgrim.me.uk"
+  value = aws_route53_zone.main.name_servers
+  type = "NS"
+  ttl = 30
+  zone_id = "577b6430210705d56aa8ce752adeefaa"
+}
 
 resource "aws_route53_zone" "main" {
   name = "aws.pilgrim.me.uk"
