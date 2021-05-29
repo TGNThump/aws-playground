@@ -331,7 +331,7 @@ resource "aws_ecs_task_definition" "test_task_definition" {
   family = "test_task_definition"
   network_mode = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu = 2
+  cpu = 256
   memory = 512
   container_definitions = jsonencode([
     {
