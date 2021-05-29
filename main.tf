@@ -159,7 +159,7 @@ resource "aws_security_group" "app" {
     from_port = 80
     protocol = "TCP"
     to_port = 80
-    security_groups = [aws_security_group.dmz.id]
+    security_groups = [aws_security_group.albs.id]
   }
 }
 
@@ -292,5 +292,13 @@ resource "aws_alb_listener" "https" {
       message_body = "Yay!"
       status_code = "200"
     }
+  }
+}
+
+resource "aws_ecs_cluster" "main" {
+  name = "app"
+  capacity_providers = ["FARGATE_SPOT"]
+  default_capacity_provider_strategy {
+    capacity_provider = "FARGATE_SPOT"
   }
 }
