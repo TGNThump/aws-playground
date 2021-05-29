@@ -385,7 +385,15 @@ resource "aws_ecs_task_definition" "test_task_definition" {
         {
           containerPort = 8080
         }
-      ]
+      ],
+      logConfiguration: {
+        logDriver: "awslogs",
+        options: {
+          awslogs-group: "awslogs-nginx-group",
+          awslogs-region: "eu-west-1",
+          awslogs-stream-prefix: "awslogs-nginx-prefix"
+        }
+      },
     }
   ])
 }
