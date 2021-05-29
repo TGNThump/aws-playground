@@ -147,29 +147,6 @@ resource "aws_route_table_association" "app-route-table-associations" {
   subnet_id = aws_subnet.app-subnets[count.index].id
 }
 
-resource "aws_security_group" "dmz" {
-  name = "DMZ"
-  vpc_id = aws_vpc.main.id
-
-  tags = {
-    Name = "DMZ"
-  }
-
-  ingress {
-    from_port = 443
-    protocol = "TCP"
-    to_port = 443
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port = 80
-    protocol = "TCP"
-    to_port = 80
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
 resource "aws_security_group" "app" {
   name = "APP"
   vpc_id = aws_vpc.main.id
@@ -243,16 +220,6 @@ resource "aws_acm_certificate_validation" "validation" {
   validation_record_fqdns = [for record in aws_route53_record.domain-validation-records : record.fqdn]
 }
 
-resource "aws_alb" "dmz-lb" {
-  name = "DMZ-ALB"
-  security_groups = [aws_security_group.dmz.id]
-  subnets = aws_subnet.dmz-subnets.*.id
-
-  tags = {
-    Name = "DMZ-ALB"
-  }
-}
-
 resource "aws_route53_record" "dmz-lb-a" {
   name = aws_route53_zone.main.name
   type = "A"
@@ -261,6 +228,39 @@ resource "aws_route53_record" "dmz-lb-a" {
     evaluate_target_health = false
     name = aws_alb.dmz-lb.dns_name
     zone_id = aws_alb.dmz-lb.zone_id
+  }
+}
+
+resource "aws_alb" "dmz-lb" {
+  name = "DMZ-ALB"
+  security_groups = [aws_security_group.albs.id]
+  subnets = aws_subnet.dmz-subnets.*.id
+
+  tags = {
+    Name = "DMZ-ALB"
+  }
+}
+
+resource "aws_security_group" "albs" {
+  name = "DMZ"
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "DMZ"
+  }
+
+  ingress {
+    from_port = 443
+    protocol = "TCP"
+    to_port = 443
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port = 80
+    protocol = "TCP"
+    to_port = 80
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
