@@ -314,33 +314,11 @@ resource "aws_security_group" "albs" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    from_port = 80
-    protocol = "TCP"
-    to_port = 80
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
     from_port       = 0
     to_port         = 65535
     protocol        = "tcp"
     cidr_blocks     = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_alb_listener" "http" {
-  load_balancer_arn = aws_alb.dmz-lb.arn
-  port = 80
-  protocol = "HTTP"
-  default_action {
-    type = "redirect"
-
-    redirect {
-      status_code = "HTTP_301"
-      protocol = "HTTPS"
-      port = "443"
-    }
   }
 }
 
@@ -433,5 +411,40 @@ resource "aws_ecs_service" "test_service" {
   network_configuration {
     subnets = aws_subnet.app-subnets.*.id
     security_groups = [aws_security_group.app.id]
+  }
+}
+
+resource "aws_cloudfront_distribution" "main" {
+  enabled = true
+  default_cache_behavior {
+    allowed_methods = ["GET","HEAD"]
+    cached_methods = ["GET","HEAD"]
+    compress = true
+    target_origin_id = aws_alb.dmz-lb.name
+    viewer_protocol_policy = "redirect-to-https"
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "all"
+      }
+    }
+  }
+  origin {
+    domain_name = aws_alb.dmz-lb.dns_name
+    origin_id = aws_alb.dmz-lb.name
+    custom_origin_config {
+      http_port = 80
+      https_port = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols = ["SSLv3"]
+    }
+  }
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+  viewer_certificate {
+    acm_certificate_arn = aws_acm_certificate.cert.arn
   }
 }
