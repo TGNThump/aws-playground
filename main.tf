@@ -22,7 +22,7 @@ provider "aws" {
 
 provider "cloudflare" {}
 
-data "cloudflare_zones" "zones" {
+data "cloudflare_zones" "main" {
   filter {
     name = "pilgrim.me.uk"
     status = "active"
@@ -30,14 +30,14 @@ data "cloudflare_zones" "zones" {
   }
 }
 
-resource "cloudflare_record" "ns-record" {
+resource "cloudflare_record" "ns-records" {
   count = length(aws_route53_zone.main.name_servers)
 
   name = "aws.pilgrim.me.uk"
   value = aws_route53_zone.main.name_servers[count.index]
   type = "NS"
   ttl = 30
-  zone_id = data.cloudflare_zones.zones[0].id
+  zone_id = data.cloudflare_zones.main.zones[0].id
 }
 
 resource "aws_route53_zone" "main" {
