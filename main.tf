@@ -384,7 +384,7 @@ data "aws_iam_role" "ecs_task_execution_role" {
 }
 
 resource "aws_cloudwatch_log_group" "test_log_group" {
-  name = "awslogs-test"
+  name = "ecs-service-test"
 }
 
 resource "aws_ecs_task_definition" "test_task_definition" {
@@ -396,7 +396,7 @@ resource "aws_ecs_task_definition" "test_task_definition" {
   execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
   container_definitions = jsonencode([
     {
-      name = "test"
+      name = "hello-world"
       image = "tutum/hello-world"
       essential = true
       networkMode = "awsvpc"
@@ -410,7 +410,7 @@ resource "aws_ecs_task_definition" "test_task_definition" {
         options: {
           awslogs-group: aws_cloudwatch_log_group.test_log_group.name,
           awslogs-region: "eu-west-1",
-          awslogs-stream-prefix: "awslogs-nginx-prefix"
+          awslogs-stream-prefix: "hello-world"
         }
       },
     }
@@ -426,7 +426,7 @@ resource "aws_ecs_service" "test_service" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.test_service.arn
-    container_name = "test"
+    container_name = "hello-world"
     container_port = 80
   }
 
