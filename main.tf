@@ -357,8 +357,11 @@ resource "aws_ecs_cluster" "main" {
 }
 
 
+resource "random_uuid" "test_service_tg_name" {}
 resource "aws_alb_target_group" "test_service" {
-  name = "test-service"
+//  https://stackoverflow.com/questions/57183814/
+//  https://github.com/hashicorp/terraform-provider-aws/issues/1666
+  name  = substr(format("%s-%s", "test-service-tg", replace(random_uuid.test_service_tg_name.result, "-", "")), 0, 32)
   protocol = "HTTP"
   port = 80
   target_type = "ip"
