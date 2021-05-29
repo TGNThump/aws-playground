@@ -324,6 +324,7 @@ resource "aws_alb_target_group" "test_service" {
   name = "test-service"
   port = 80
   protocol = "HTTP"
+  target_type = "ip"
   vpc_id = aws_vpc.main.id
 }
 
