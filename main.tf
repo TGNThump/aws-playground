@@ -278,7 +278,7 @@ resource "aws_acm_certificate_validation" "validation" {
   validation_record_fqdns = [for record in aws_route53_record.domain-validation-records : record.fqdn]
 }
 
-resource "aws_route53_record" "dmz-lb-a" {
+resource "aws_route53_record" "dmz-cloudfront" {
   name = aws_route53_zone.main.name
   type = "A"
   zone_id = aws_route53_zone.main.id
