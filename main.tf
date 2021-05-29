@@ -324,6 +324,7 @@ resource "aws_ecs_cluster" "main" {
 resource "aws_alb_target_group" "test_service" {
   name = "test-service"
   protocol = "HTTP"
+  port = 8080
   target_type = "ip"
   vpc_id = aws_vpc.main.id
 }
