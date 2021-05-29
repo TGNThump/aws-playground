@@ -329,6 +329,7 @@ resource "aws_alb_target_group" "test_service" {
 
 resource "aws_ecs_task_definition" "test_task_definition" {
   family = "test_task_definition"
+  network_mode = "awsvpc"
   container_definitions = jsonencode([
     {
       name = "hello_word"
@@ -352,7 +353,7 @@ resource "aws_ecs_service" "test_service" {
   task_definition = aws_ecs_task_definition.test_task_definition.arn
   desired_count = 2
   launch_type = "FARGATE"
-  iam_role        = aws_iam_role.ecs_agent.arn
+
 
   load_balancer {
     target_group_arn = aws_alb_target_group.test_service.arn
@@ -364,30 +365,4 @@ resource "aws_ecs_service" "test_service" {
     subnets = aws_subnet.app-subnets.*.id
     security_groups = [aws_security_group.app.id]
   }
-}
-
-data "aws_iam_policy_document" "ecs_agent" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role" "ecs_agent" {
-  name               = "ecs-agent"
-  assume_role_policy = data.aws_iam_policy_document.ecs_agent.json
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_agent" {
-  role       = "aws_iam_role.ecs_agent.name"
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
-}
-
-resource "aws_iam_instance_profile" "ecs_agent" {
-  name = "ecs-agent"
-  role = aws_iam_role.ecs_agent.name
 }
