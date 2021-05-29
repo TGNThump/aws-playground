@@ -323,7 +323,6 @@ resource "aws_ecs_cluster" "main" {
 
 resource "aws_alb_target_group" "test_service" {
   name = "test-service"
-  port = 80
   protocol = "HTTP"
   target_type = "ip"
   vpc_id = aws_vpc.main.id
@@ -342,16 +341,10 @@ resource "aws_ecs_task_definition" "test_task_definition" {
   execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
   container_definitions = jsonencode([
     {
-      name = "hello_world"
-      image = "tutum/hello-world"
+      name = "nginx"
+      image = "public.ecr.aws/nginx/nginx:latest"
       essential = true
       networkMode = "awsvpc"
-      portMappings = [
-        {
-          containerPort: 80
-          hostPort: 80
-        }
-      ]
     }
   ])
 }
@@ -365,8 +358,8 @@ resource "aws_ecs_service" "test_service" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.test_service.arn
-    container_name = "hello_world"
-    container_port = 80
+    container_name = "nginx"
+    container_port = 8080
   }
 
   network_configuration {
