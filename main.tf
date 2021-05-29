@@ -479,13 +479,6 @@ resource "aws_cloudfront_distribution" "main" {
 
     target_origin_id = aws_alb.dmz-lb.name
     viewer_protocol_policy = "redirect-to-https"
-
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "all"
-      }
-    }
   }
   origin {
     domain_name = aws_alb.dmz-lb.dns_name
