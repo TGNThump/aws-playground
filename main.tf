@@ -358,7 +358,7 @@ resource "aws_ecs_service" "test_service" {
   load_balancer {
     target_group_arn = aws_alb_target_group.test_service.arn
     container_name = "hello_world"
-    container_port = 0
+    container_port = 80
   }
 
   network_configuration {
